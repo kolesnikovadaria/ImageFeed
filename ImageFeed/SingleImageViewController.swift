@@ -1,11 +1,3 @@
-//
-//  SingleImageViewController.swift
-//  ImageFeed
-//
-//  Created by Daria on 02.07.2026.
-//
-
-
 import UIKit
 
 final class SingleImageViewController: UIViewController {

@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		434C95AD3063159500226933 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 434C95AC3063159500226933 /* WebKit.framework */; };
+		434C962730821F6C00226933 /* ProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = 434C962630821F6C00226933 /* ProgressHUD */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		430EF5402FC3918200D1C832 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,6 +32,7 @@
 		430EF5292FC3918100D1C832 /* ImageFeed.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ImageFeed.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		430EF53F2FC3918200D1C832 /* ImageFeedTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ImageFeedTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		430EF5492FC3918200D1C832 /* ImageFeedUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ImageFeedUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		434C95AC3063159500226933 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -65,6 +71,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				434C95AD3063159500226933 /* WebKit.framework in Frameworks */,
+				434C962730821F6C00226933 /* ProgressHUD in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -91,6 +99,7 @@
 				430EF52B2FC3918100D1C832 /* ImageFeed */,
 				430EF5422FC3918200D1C832 /* ImageFeedTests */,
 				430EF54C2FC3918200D1C832 /* ImageFeedUITests */,
+				434C95AB3063159400226933 /* Frameworks */,
 				430EF52A2FC3918100D1C832 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -103,6 +112,14 @@
 				430EF5492FC3918200D1C832 /* ImageFeedUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		434C95AB3063159400226933 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				434C95AC3063159500226933 /* WebKit.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -125,6 +142,7 @@
 			);
 			name = ImageFeed;
 			packageProductDependencies = (
+				434C962630821F6C00226933 /* ProgressHUD */,
 			);
 			productName = ImageFeed;
 			productReference = 430EF5292FC3918100D1C832 /* ImageFeed.app */;
@@ -208,6 +226,9 @@
 			);
 			mainGroup = 430EF5202FC3918100D1C832;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				434C95FA30821E5900226933 /* XCRemoteSwiftPackageReference "ProgressHUD" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 430EF52A2FC3918100D1C832 /* Products */;
 			projectDirPath = "";
@@ -597,6 +618,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		434C95FA30821E5900226933 /* XCRemoteSwiftPackageReference "ProgressHUD" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/relatedcode/ProgressHUD";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 15.0.3;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		434C962630821F6C00226933 /* ProgressHUD */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 434C95FA30821E5900226933 /* XCRemoteSwiftPackageReference "ProgressHUD" */;
+			productName = ProgressHUD;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 430EF5212FC3918100D1C832 /* Project object */;
 }
