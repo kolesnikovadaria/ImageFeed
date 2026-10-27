@@ -331,10 +331,10 @@
             </objects>
             <point key="canvasLocation" x="4650" y="-347"/>
         </scene>
-        <!--View Controller-->
+        <!--Splash View Controller-->
         <scene sceneID="6cb-jt-O9g">
             <objects>
-                <viewController id="jHS-av-fuu" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="SplashViewController" id="jHS-av-fuu" customClass="SplashViewController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="hCC-K8-u8W">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
