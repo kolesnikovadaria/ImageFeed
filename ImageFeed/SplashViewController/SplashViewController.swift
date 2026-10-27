@@ -5,12 +5,26 @@ final class SplashViewController: UIViewController {
     // MARK: - Properties
     private let storage = OAuth2TokenStorage()
     private let showAuthenticationScreenSegueIdentifier = "ShowAuthenticationScreen"
+    private var isFirstLaunch = true
     
     
     // MARK: - Lifecycle
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        setNeedsStatusBarAppearanceUpdate()
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        checkAuthStatus()
+        
+        guard isFirstLaunch else { return }
+        isFirstLaunch = false
+        
+        if storage.token != nil {
+            switchToTabBarController()
+        } else {
+            performSegue(withIdentifier: showAuthenticationScreenSegueIdentifier, sender: nil)
+        }
     }
     // MARK: - Private Methods
     private func checkAuthStatus() {
