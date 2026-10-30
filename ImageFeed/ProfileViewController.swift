@@ -9,12 +9,15 @@ import UIKit
 
 final class ProfileViewController: UIViewController {
     
+// MARK: - Services
+    private let profileService = ProfileService.shared
+    
     // MARK: - Constants
     
     static let imageName = "profileImage"
-    static let name = "Екатерина Новикова"
-    static let nickname = "@ekaterina_nov"
-    static let descriptionText = "Hello, world!"
+//    static let name = "Екатерина Новикова"
+//    static let nickname = "@ekaterina_nov"
+//    static let descriptionText = "Hello, world!"
     static let exitButton = "Exit"
     
     // MARK: - UI Elements
@@ -33,7 +36,7 @@ final class ProfileViewController: UIViewController {
     
     private let nameLabel: UILabel = {
         let label = UILabel ()
-        label.text = ProfileViewController.name
+//        label.text = ProfileViewController.name
         label.textColor = .ypWhite
         label.font = UIFont.systemFont(ofSize: 23, weight: .bold)
         
@@ -42,9 +45,9 @@ final class ProfileViewController: UIViewController {
         return label
     }()
     
-    private let nickNameLabel: UILabel = {
+    private let loginNameLabel: UILabel = {
         let label2 = UILabel ()
-        label2.text = ProfileViewController.nickname
+//        label2.text = ProfileViewController.nickname
         label2.textColor = .ypWhite
         label2.font = UIFont.systemFont(ofSize: 13, weight: .regular)
         
@@ -55,7 +58,7 @@ final class ProfileViewController: UIViewController {
     
     private let descriptionLabel: UILabel = {
         let label3 = UILabel ()
-        label3.text = ProfileViewController.descriptionText
+//        label3.text = ProfileViewController.descriptionText
         label3.textColor = .ypWhite
         label3.font = UIFont.systemFont(ofSize: 13, weight: .regular)
         
@@ -69,6 +72,7 @@ final class ProfileViewController: UIViewController {
         let image = UIImage (named: ProfileViewController.exitButton)
         button.setImage(image, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(didTapLogoutButton), for: .touchUpInside)
         return button
     }()
 
@@ -78,15 +82,36 @@ final class ProfileViewController: UIViewController {
         super.viewDidLoad()
         setupViews()
         setupConstraints()
+        
+        if let profile = profileService.profile {
+                    updateProfileDetails(profile: profile)
+                }
     }
     
+    // MARK: - Logic
+    private func updateProfileDetails(profile: Profile) {
+        nameLabel.text = profile.name.isEmpty
+            ? "Имя не указано"
+            : profile.name
+        
+        loginNameLabel.text = profile.loginName.isEmpty
+            ? "@неизвестный_пользователь"
+            : profile.loginName
+        
+        descriptionLabel.text = (profile.bio?.isEmpty ?? true)
+            ? "Профиль не заполнен"
+            : profile.bio
+    }
+    @objc private func didTapLogoutButton() {
+        // Логика выхода из аккаунта (будет дописана в следующих уроках)
+    }
     // MARK: - Setup UI
     private func setupViews() {
         view.backgroundColor = .ypBlack
         
         view.addSubview(imageView)
         view.addSubview(nameLabel)
-        view.addSubview(nickNameLabel)
+        view.addSubview(loginNameLabel)
         view.addSubview(descriptionLabel)
         view.addSubview(logoutButton)
     }
@@ -102,11 +127,11 @@ final class ProfileViewController: UIViewController {
             nameLabel.leadingAnchor.constraint(equalTo: imageView.leadingAnchor),
             nameLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 8),
             
-            nickNameLabel.leadingAnchor.constraint(equalTo: imageView.leadingAnchor),
-            nickNameLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 8),
+            loginNameLabel.leadingAnchor.constraint(equalTo: imageView.leadingAnchor),
+            loginNameLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 8),
             
             descriptionLabel.leadingAnchor.constraint(equalTo: imageView.leadingAnchor),
-            descriptionLabel.topAnchor.constraint(equalTo: nickNameLabel.bottomAnchor, constant: 8),
+            descriptionLabel.topAnchor.constraint(equalTo: loginNameLabel.bottomAnchor, constant: 8),
             
             logoutButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
             logoutButton.centerYAnchor.constraint(equalTo: imageView.centerYAnchor),
@@ -115,6 +140,40 @@ final class ProfileViewController: UIViewController {
         ])
     }
 }
-    
 
 
+//import UIKit
+//
+//final class ProfileViewController: UIViewController {
+//    @IBOutlet private var avatarImageView: UIImageView!
+//    @IBOutlet private var nameLabel: UILabel!
+//    @IBOutlet private var loginNameLabel: UILabel!
+//    @IBOutlet private var descriptionLabel: UILabel!
+//
+//    @IBOutlet private var logoutButton: UIButton!
+//
+//    override func viewDidLoad() {
+//        super.viewDidLoad()
+//        if let profile = ProfileService.shared.profile {
+//            updateProfileDetails(profile: profile)
+//        }
+//    }
+//
+//    private func updateProfileDetails(profile: Profile) {
+//        nameLabel.text = profile.name.isEmpty
+//            ? "Имя не указано"
+//            : profile.name
+//        loginNameLabel.text = profile.loginName.isEmpty
+//            ? "@неизвестный_пользователь"
+//            : profile.loginName
+//        descriptionLabel.text = (profile.bio?.isEmpty ?? true)
+//            ? "Профиль не заполнен"
+//            : profile.bio
+//    }
+//
+//    @IBAction private func didTapLogoutButton() {
+//    }
+//}
+//    
+//
+//

@@ -11,6 +11,7 @@ final class AuthViewController: UIViewController {
     private let showWebViewSegueIdentifier = "ShowWebView"
     private let logger = Logger (category: "Auth")
     weak var delegate: AuthViewControllerDelegate?
+    private let oauth2Service = OAuth2Service.shared
     
     
     override func viewDidLoad() {
@@ -47,7 +48,7 @@ extension AuthViewController: WebViewViewControllerDelegate {
         UIBlockingProgressHUD.show()
         logger.debug("Начинаем обмен кода на токен")
         
-        OAuth2Service.shared.fetchOAuthToken(code: code) { [weak self] result in
+        OAuth2Service.shared.fetchOAuthToken(code) { [weak self] result in
             UIBlockingProgressHUD.dismiss()
             guard let self else {
                 let staticLogger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.imagefeed", category: "Auth")
@@ -83,3 +84,12 @@ extension Logger {
         self.init(subsystem: Self.subsystem, category: category)
     }
 }
+
+extension AuthViewController {
+    private func fetchOAuthToken(_ code: String, completion: @escaping (Result<String, Error>) -> Void) {
+        oauth2Service.fetchOAuthToken(code) { result in
+            completion(result)
+        }
+    }
+}
+
