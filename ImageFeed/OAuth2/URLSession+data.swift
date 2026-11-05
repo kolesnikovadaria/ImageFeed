@@ -19,20 +19,41 @@ extension URLSession {
             }
         }
         
-        let task = dataTask(with: request, completionHandler: { data, response, error in
-            if let data = data, let response = response, let statusCode = (response as? HTTPURLResponse)?.statusCode {
-                if 200 ..< 300 ~= statusCode {
-                    fulfillCompletionOnTheMainThread(.success(data)) // 3
-                } else {
-                    fulfillCompletionOnTheMainThread(.failure(NetworkError.httpStatusCode(statusCode))) // 4
-                }
-            } else if let error = error {
-                fulfillCompletionOnTheMainThread(.failure(NetworkError.urlRequestError(error))) // 5
-            } else {
-                fulfillCompletionOnTheMainThread(.failure(NetworkError.urlSessionError)) // 6
+
+        let task = dataTask(with: request) { data, response, error in
+
+            print("===== URLSession callback =====")
+
+            if let response = response as? HTTPURLResponse {
+                print("STATUS =", response.statusCode)
             }
-        })
-        
+
+            if let data = data,
+               let body = String(data: data, encoding: .utf8) {
+                print("BODY =", body)
+            }
+
+            if let error = error {
+                print("ERROR =", error.localizedDescription)
+            }
+
+            if let data = data,
+               let response = response as? HTTPURLResponse {
+
+                if 200..<300 ~= response.statusCode {
+                    fulfillCompletionOnTheMainThread(.success(data))
+                } else {
+                    print("UNSPLASH SERVER ERROR: Сервер вернул код ошибки \(response.statusCode)")
+                    fulfillCompletionOnTheMainThread(.failure(NetworkError.httpStatusCode(response.statusCode)))
+                }
+
+            } else if let error = error {
+                fulfillCompletionOnTheMainThread(.failure(NetworkError.urlRequestError(error)))
+            } else {
+                fulfillCompletionOnTheMainThread(.failure(NetworkError.urlSessionError))
+            }
+        }
+
         return task
     }
 }
