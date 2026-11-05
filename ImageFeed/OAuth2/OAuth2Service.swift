@@ -1,5 +1,6 @@
 import Foundation
 
+// MARK: - Models
 struct OAuthTokenResponseBody: Decodable {
     let accessToken: String
     let tokenType: String
@@ -7,6 +8,7 @@ struct OAuthTokenResponseBody: Decodable {
     let createdAt: Int
 }
 
+// MARK: - Enums
 enum HTTPMethod: String {
     case get = "GET"
     case post = "POST"
@@ -18,7 +20,10 @@ enum AuthServiceError: Error {
     case invalidRequest
 }
 
+// MARK: - OAuth2Service
 final class OAuth2Service {
+    
+    // MARK: - Properties
     static let shared = OAuth2Service()
     
     private let urlSession = URLSession.shared
@@ -44,6 +49,7 @@ final class OAuth2Service {
     
     private init() {}
     
+    // MARK: - Public Methods
     func fetchOAuthToken(_ code: String, completion: @escaping (Result<String, Error>) -> Void) {
         assert(Thread.isMainThread)
         guard lastCode != code else {
@@ -64,30 +70,30 @@ final class OAuth2Service {
             DispatchQueue.main.async {
                 UIBlockingProgressHUD.dismiss()
                 guard let self = self else { return }
-
+                
                 switch result {
                 case .success(let body):
                     let authToken = body.accessToken
-                    self.authToken = authToken 
+                    self.authToken = authToken
                     completion(.success(authToken))
-
+                    
                     self.task = nil
                     self.lastCode = nil
-
+                    
                 case .failure(let error):
                     print("[fetchOAuthToken]: Ошибка запроса: \(error.localizedDescription)")
-                    completion(.failure(error)) // ошибка
-
+                    completion(.failure(error))
+                    
                     self.task = nil
                     self.lastCode = nil
                 }
             }
         }
-            self.task = task
-            task.resume()
+        self.task = task
+        task.resume()
     }
-
     
+    // MARK: - Private Methods
     private func makeOAuthTokenRequest(with code: String) -> URLRequest? {
         guard let url = URL(string: "https://unsplash.com/oauth/token")
         else {
@@ -112,9 +118,10 @@ final class OAuth2Service {
         return request
     }
 }
+
+// MARK: - Network Support
 extension OAuth2Service {
     private func object(for request: URLRequest, completion: @escaping (Result<OAuthTokenResponseBody, Error>) -> Void) -> URLSessionTask {
-//        let decoder = JSONDecoder()
         return urlSession.data(for: request) { (result: Result<Data, Error>) in
             switch result {
             case .success(let data):
@@ -132,69 +139,3 @@ extension OAuth2Service {
         }
     }
 }
-
-
-
-//final class OAuth2Service {
-//    private let urlSession = URLSession.shared              // 1
-//    private var task: URLSessionTask?                       // 2
-//    private var lastCode: String?
-// 3
-//    func fetchOAuthToken(_ code: String, completion: @escaping (Result<String, Error>) -> Void) {
-//        assert(Thread.isMainThread)                         // 4
-//        if task != nil {                                    // 5
-//            if lastCode != code {                           // 6
-//                task?.cancel()                              // 7
-//            } else {
-//                completion(.failure(AuthServiceError.invalidRequest))
-//                return                                      // 8
-//            }
-//        } else {
-//            if lastCode == code {                           // 9
-//                completion(.failure(AuthServiceError.invalidRequest))
-//                return
-//            }
-//        }
-//        lastCode = code                                     // 10
-//        guard
-//            let request = makeOAuthTokenRequest(code: code)           // 11
-//        else {
-//            completion(.failure(AuthServiceError.invalidRequest))
-//            return
-//        }
-//        let task = urlSession.dataTask(with: request) { [weak self] data, response, error in
-//            DispatchQueue.main.async {                      // 12
-//                // TODO: разбора ответа, из 10 спринта      // 13
-//                self?.task = nil                            // 14
-//                self?.lastCode = nil                        // 15
-//            }
-//        }
-//        self.task = task                                    // 16
-//        task.resume()                                       // 17
-//    }
-//
-//    private func makeOAuthTokenRequest(code: String) -> URLRequest? {  // 18
-//        guard
-//            var urlComponents = URLComponents(string: "https://unsplash.com/oauth/token")
-//        else {
-//            assertionFailure("Failed to create URL")
-//            return nil
-//        }
-//
-//        urlComponents.queryItems = [
-//            URLQueryItem(name: "client_id", value: Constants.accessKey),
-//            URLQueryItem(name: "client_secret", value: Constants.secretKey),
-//            URLQueryItem(name: "redirect_uri", value: Constants.redirectURI),
-//            URLQueryItem(name: "code", value: code),
-//            URLQueryItem(name: "grant_type", value: "authorization_code"),
-//        ]
-//
-//        guard let authTokenUrl = urlComponents.url else {
-//            return nil
-//        }
-//
-//        var request = URLRequest(url: authTokenUrl)
-//        request.httpMethod = "POST"
-//        return request
-//    }
-//}

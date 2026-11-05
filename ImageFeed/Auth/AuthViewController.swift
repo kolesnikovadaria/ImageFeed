@@ -2,23 +2,29 @@ import UIKit
 import ProgressHUD
 import OSLog
 
+// MARK: - AuthViewControllerDelegate
 protocol AuthViewControllerDelegate: AnyObject {
     func didAuthenticate(_ vc: AuthViewController)
 }
 
 
 final class AuthViewController: UIViewController {
+    
+    // MARK: - Private Properties
     private let showWebViewSegueIdentifier = "ShowWebView"
     private let logger = Logger (category: "Auth")
-    weak var delegate: AuthViewControllerDelegate?
     private let oauth2Service = OAuth2Service.shared
     
+    // MARK: - Public Properties
+    weak var delegate: AuthViewControllerDelegate?
     
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         configureBackButton()
     }
     
+    // MARK: - Navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == showWebViewSegueIdentifier {
             guard
@@ -32,7 +38,7 @@ final class AuthViewController: UIViewController {
             super.prepare(for: segue, sender: sender)
         }
     }
-    
+    // MARK: - Setup UI
     private func configureBackButton() {
         navigationController?.navigationBar.backIndicatorImage = UIImage(named: "nav_back_button")
         navigationController?.navigationBar.backIndicatorTransitionMaskImage = UIImage(named: "nav_back_button")
@@ -41,6 +47,7 @@ final class AuthViewController: UIViewController {
     }
 }
 
+// MARK: - WebViewViewControllerDelegate
 extension AuthViewController: WebViewViewControllerDelegate {
     
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
@@ -79,21 +86,17 @@ extension AuthViewController: WebViewViewControllerDelegate {
         vc.dismiss(animated: true)
     }
 }
-extension Logger {
-    private static let subsystem = Bundle.main.bundleIdentifier ?? "com.imagefeed"
-    init(category: String) {
-        self.init(subsystem: Self.subsystem, category: category)
-    }
-}
 
-extension AuthViewController {
-    private func fetchOAuthToken(_ code: String, completion: @escaping (Result<String, Error>) -> Void) {
-        oauth2Service.fetchOAuthToken(code) { result in
-            completion(result)
-        }
-    }
-}
+// MARK: - Network Logic
+//extension AuthViewController {
+//    private func fetchOAuthToken(_ code: String, completion: @escaping (Result<String, Error>) -> Void) {
+//        oauth2Service.fetchOAuthToken(code) { result in
+//            completion(result)
+//        }
+//    }
+//}
 
+// MARK: - Alerts
 extension AuthViewController {
     func showAuthErrorAlert() {
         let alertController = UIAlertController(
@@ -106,4 +109,10 @@ extension AuthViewController {
         present(alertController, animated: true, completion: nil)
     }
 }
-
+// MARK: - Logger Extension
+extension Logger {
+    private static let subsystem = Bundle.main.bundleIdentifier ?? "com.imagefeed"
+    init(category: String) {
+        self.init(subsystem: Self.subsystem, category: category)
+    }
+}
