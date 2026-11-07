@@ -2,22 +2,29 @@ import UIKit
 import ProgressHUD
 import OSLog
 
+// MARK: - AuthViewControllerDelegate
 protocol AuthViewControllerDelegate: AnyObject {
     func didAuthenticate(_ vc: AuthViewController)
 }
 
 
 final class AuthViewController: UIViewController {
+    
+    // MARK: - Private Properties
     private let showWebViewSegueIdentifier = "ShowWebView"
     private let logger = Logger (category: "Auth")
+    private let oauth2Service = OAuth2Service.shared
+    
+    // MARK: - Public Properties
     weak var delegate: AuthViewControllerDelegate?
     
-    
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         configureBackButton()
     }
     
+    // MARK: - Navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == showWebViewSegueIdentifier {
             guard
@@ -31,27 +38,28 @@ final class AuthViewController: UIViewController {
             super.prepare(for: segue, sender: sender)
         }
     }
-    
+    // MARK: - Setup UI
     private func configureBackButton() {
-        navigationController?.navigationBar.backIndicatorImage = UIImage(named: "nav_back_button") // 1
-        navigationController?.navigationBar.backIndicatorTransitionMaskImage = UIImage(named: "nav_back_button") // 2
-        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil) // 3
-        navigationItem.backBarButtonItem?.tintColor = UIColor(named: "ypBlack") // 4
+        navigationController?.navigationBar.backIndicatorImage = UIImage(named: "nav_back_button")
+        navigationController?.navigationBar.backIndicatorTransitionMaskImage = UIImage(named: "nav_back_button")
+        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+        navigationItem.backBarButtonItem?.tintColor = UIColor(named: "ypBlack")
     }
 }
 
+// MARK: - WebViewViewControllerDelegate
 extension AuthViewController: WebViewViewControllerDelegate {
     
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
-        vc.dismiss(animated: true)
+        vc.dismiss(animated: false)
         UIBlockingProgressHUD.show()
         logger.debug("Начинаем обмен кода на токен")
         
-        OAuth2Service.shared.fetchOAuthToken(code: code) { [weak self] result in
+        OAuth2Service.shared.fetchOAuthToken(code) { [weak self] result in
             UIBlockingProgressHUD.dismiss()
             guard let self else {
                 let staticLogger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.imagefeed", category: "Auth")
-                staticLogger.warning("AuthViewController был уничтожен в памяти")
+                staticLogger.warning("[AuthViewController.webViewViewController]: LifecycleError — AuthViewController был уничтожен в памяти")
                 return
             }
             
@@ -66,7 +74,8 @@ extension AuthViewController: WebViewViewControllerDelegate {
                 self.delegate?.didAuthenticate(self)
                 
             case .failure(let error):
-                self.logger.error("Сетевая ошибка авторизации: \(error.localizedDescription)")
+                self.logger.error("[OAuth2Service.fetchOAuthToken]: AuthError — Сетевая ошибка авторизации: \(error.localizedDescription)")
+                self.showAuthErrorAlert()
                 
             }
         }
@@ -77,6 +86,21 @@ extension AuthViewController: WebViewViewControllerDelegate {
         vc.dismiss(animated: true)
     }
 }
+
+// MARK: - Alerts
+extension AuthViewController {
+    func showAuthErrorAlert() {
+        let alertController = UIAlertController(
+            title: "Что-то пошло не так(",
+            message: "Не удалось войти в систему",
+            preferredStyle: .alert
+        )
+        let okAction = UIAlertAction(title: "Ок", style: .default, handler: nil)
+        alertController.addAction(okAction)
+        present(alertController, animated: true, completion: nil)
+    }
+}
+// MARK: - Logger Extension
 extension Logger {
     private static let subsystem = Bundle.main.bundleIdentifier ?? "com.imagefeed"
     init(category: String) {
