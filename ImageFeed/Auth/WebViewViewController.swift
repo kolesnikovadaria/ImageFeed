@@ -2,24 +2,32 @@ import UIKit
 import WebKit
 import OSLog
 
+// MARK: - Constants
 enum WebViewConstants {
     static let unsplashAuthorizeURLString = "https://unsplash.com/oauth/authorize"
 }
 
+// MARK: - WebViewViewControllerDelegate
 protocol WebViewViewControllerDelegate: AnyObject {
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String)
     func webViewViewControllerDidCancel(_ vc: WebViewViewController)
 }
 
+// MARK: - WebViewViewController
 final class WebViewViewController: UIViewController {
     
-    weak var delegate: WebViewViewControllerDelegate?
+    // MARK: - IBOutlets
     @IBOutlet private var progressView: UIProgressView!
     @IBOutlet private var webView: WKWebView!
     
+    
+    // MARK: - Properties
+    weak var delegate: WebViewViewControllerDelegate?
     private var estimatedProgressObservation: NSKeyValueObservation?
     private let logger = Logger(category: "WebViewViewController")
     
+    
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         loadAuthView()
@@ -38,6 +46,7 @@ final class WebViewViewController: UIViewController {
         updateProgress()
     }
     
+    // MARK: - Private Methods
     private func loadAuthView() {
         guard var urlComponents = URLComponents(string: WebViewConstants.unsplashAuthorizeURLString) else {
             return
@@ -65,7 +74,7 @@ final class WebViewViewController: UIViewController {
     }
 }
 
-
+// MARK: - WKNavigationDelegate
 extension WebViewViewController: WKNavigationDelegate {
     
     func webView(
@@ -78,7 +87,7 @@ extension WebViewViewController: WKNavigationDelegate {
                 if let code = code(from: url) {
                     delegate?.webViewViewController(self, didAuthenticateWithCode: code)
                 } else {
-                    logger.error("[WebViewViewController.decidePolicyFor]: Code not found in redirect URL parameters")
+                    logger.error("[WebViewViewController.webView]: AuthError — Code not found in redirect URL parameters")
                 }
                 decisionHandler(.cancel)
                 return

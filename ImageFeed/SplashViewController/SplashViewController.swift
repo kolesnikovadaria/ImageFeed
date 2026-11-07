@@ -97,8 +97,7 @@ final class SplashViewController: UIViewController {
                 self.switchToTabBarController()
                 
             case let .failure(error):
-                print(error)
-                break
+                print("[ProfileService.fetchProfile]: NetworkError — \(error.localizedDescription)")
             }
         }
     }

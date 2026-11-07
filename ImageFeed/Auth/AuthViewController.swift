@@ -59,7 +59,7 @@ extension AuthViewController: WebViewViewControllerDelegate {
             UIBlockingProgressHUD.dismiss()
             guard let self else {
                 let staticLogger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.imagefeed", category: "Auth")
-                staticLogger.warning("AuthViewController был уничтожен в памяти")
+                staticLogger.warning("[AuthViewController.webViewViewController]: LifecycleError — AuthViewController был уничтожен в памяти")
                 return
             }
             
@@ -74,7 +74,7 @@ extension AuthViewController: WebViewViewControllerDelegate {
                 self.delegate?.didAuthenticate(self)
                 
             case .failure(let error):
-                self.logger.error("Сетевая ошибка авторизации: \(error.localizedDescription)")
+                self.logger.error("[OAuth2Service.fetchOAuthToken]: AuthError — Сетевая ошибка авторизации: \(error.localizedDescription)")
                 self.showAuthErrorAlert()
                 
             }
@@ -87,20 +87,11 @@ extension AuthViewController: WebViewViewControllerDelegate {
     }
 }
 
-// MARK: - Network Logic
-//extension AuthViewController {
-//    private func fetchOAuthToken(_ code: String, completion: @escaping (Result<String, Error>) -> Void) {
-//        oauth2Service.fetchOAuthToken(code) { result in
-//            completion(result)
-//        }
-//    }
-//}
-
 // MARK: - Alerts
 extension AuthViewController {
     func showAuthErrorAlert() {
         let alertController = UIAlertController(
-            title: "Что-то пошло не так",
+            title: "Что-то пошло не так(",
             message: "Не удалось войти в систему",
             preferredStyle: .alert
         )

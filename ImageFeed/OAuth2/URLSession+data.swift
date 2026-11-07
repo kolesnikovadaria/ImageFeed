@@ -36,7 +36,7 @@ extension URLSession {
             }
             
             if let error = error {
-                print("ERROR =", error.localizedDescription)
+                print("[URLSession.data]: NetworkError — urlRequestError: \(error.localizedDescription)")
             }
             
             if let data = data,
@@ -45,14 +45,15 @@ extension URLSession {
                 if 200..<300 ~= response.statusCode {
                     fulfillCompletionOnTheMainThread(.success(data))
                 } else {
-                    print("UNSPLASH SERVER ERROR: Сервер вернул код ошибки \(response.statusCode)")
-                    fulfillCompletionOnTheMainThread(.failure(NetworkError.httpStatusCode(response.statusCode)))
+                    print("[URLSession.data]: HTTPError — statusCode: \(response.statusCode)")
+                                       fulfillCompletionOnTheMainThread(.failure(NetworkError.httpStatusCode(response.statusCode)))
                 }
                 
             } else if let error = error {
                 fulfillCompletionOnTheMainThread(.failure(NetworkError.urlRequestError(error)))
             } else {
-                fulfillCompletionOnTheMainThread(.failure(NetworkError.urlSessionError))
+                print("[URLSession.data]: NetworkError — Данные и ответ от сервера отсутствуют")
+                               fulfillCompletionOnTheMainThread(.failure(NetworkError.urlSessionError))
             }
         }
         
@@ -80,15 +81,16 @@ extension URLSession {
                     completion(.success(decodedObject))
                 } catch {
                     if let decodingError = error as? DecodingError {
-                        print("Ошибка декодирования: \(decodingError), Данные: \(String(data: data, encoding: .utf8) ?? "")")
+                        print("[URLSession.objectTask]: DecodingError — \(error.localizedDescription), Данные: \(String(data: data, encoding: .utf8) ?? "")")
                     } else {
-                        print("Ошибка декодирования: \(error.localizedDescription), Данные: \(String(data: data, encoding: .utf8) ?? "")")
+                        print("[URLSession.objectTask]: DecodingError — \(error.localizedDescription), Данные: \(String(data: data, encoding: .utf8) ?? "")")
+                           completion(.failure(error))
                     }
                     completion(.failure(error))
                 }
                 
             case .failure(let error):
-                print("Ошибка запроса: \(error.localizedDescription)")
+                print("[URLSession.objectTask]: NetworkError — Ошибка запроса: \(error.localizedDescription)")
                 completion(.failure(error))
             }
         }

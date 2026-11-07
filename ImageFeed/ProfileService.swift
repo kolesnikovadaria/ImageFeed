@@ -13,14 +13,6 @@ struct ProfileResult: Codable {
     let firstName: String
     let lastName: String?
     let bio: String?
-    
-    private enum CodingKeys: String, CodingKey {
-        case username
-        case firstName = "first_name"
-        case lastName = "last_name"
-        case bio
-        
-    }
 }
 
 // MARK: - ProfileService
@@ -40,6 +32,7 @@ final class ProfileService {
         task?.cancel()
         
         guard let request = makeProfileRequest(token: token) else {
+            print("[ProfileService.makeProfileRequest]: RequestError — Не удалось создать URLRequest")
             completion(.failure(URLError(.badURL)))
             return
         }
@@ -60,7 +53,7 @@ final class ProfileService {
                     self.profile = profile
                     completion(.success(profile))
                 case .failure(let error):
-                    print("[fetchProfile]: Ошибка запроса: \(error.localizedDescription)")
+                    print("[ProfileService.fetchProfile]: NetworkError — \(error.localizedDescription)")
                     completion(.failure(error))
                 }
                 self.task = nil

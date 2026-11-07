@@ -6,11 +6,11 @@ enum ConstantProfileView {
         static let namePlaceholder = "Имя не указано"
         static let nicknamePlaceholder = "@неизвестный_пользователь"
         static let descriptionPlaceholder = "Профиль не заполнен"
-        static let logoutImage = "LogOut"
+        static let logoutImage = "Exit"
         
-        static let backgroundColor = "YP Black (iOS)"
-        static let whiteColor = "YP White (iOS)"
-        static let grayColor = "YP Gray (iOS)"
+        static let backgroundColor = "YP Black"
+        static let whiteColor = "YP White"
+        static let grayColor = "YP Gray"
     }
 }
 
@@ -28,7 +28,7 @@ final class ProfileViewController: UIViewController {
             .withTintColor(.lightGray, renderingMode: .alwaysOriginal)
             .withConfiguration(UIImage.SymbolConfiguration(pointSize: 70, weight: .regular, scale: .large))
         let imageView = UIImageView(image: profileImage)
-        imageView.contentMode = .scaleAspectFill
+        imageView.contentMode = .scaleAspectFit
         imageView.clipsToBounds = true
         imageView.layer.cornerRadius = 35
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -140,16 +140,6 @@ final class ProfileViewController: UIViewController {
         // Логика выхода из аккаунта (будет дописана в следующих уроках)
     }
     // MARK: - Setup UI
-    private func setupViews() {
-        view.backgroundColor = .ypBlack
-        
-        view.addSubview(imageView)
-        view.addSubview(nameLabel)
-        view.addSubview(loginNameLabel)
-        view.addSubview(descriptionLabel)
-        view.addSubview(logoutButton)
-    }
-    
     private func setupConstraints() {
         
         view.backgroundColor = UIColor(named: ConstantProfileView.ProfileView.backgroundColor)
