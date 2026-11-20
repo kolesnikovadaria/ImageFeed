@@ -1,7 +1,7 @@
 import Foundation
 import CoreGraphics
 
-// MARK: - Модели данных
+// MARK: - Models
 
 struct Photo {
     let id: String
@@ -31,9 +31,12 @@ struct UrlsResult: Decodable {
 // MARK: - ImagesListService
 
 final class ImagesListService {
+    
+    // MARK: - Static Properties
     static let shared = ImagesListService()
     static let didChangeNotification = Notification.Name(rawValue: "ImagesListServiceDidChange")
     
+    // MARK: - Properties
     private(set) var photos: [Photo] = []
     
     private var lastLoadedPage: Int?
@@ -41,24 +44,21 @@ final class ImagesListService {
     private let urlSession = URLSession.shared
     private let dateFormatter = ISO8601DateFormatter()
     
+    // MARK: - Initializers
     private init() {}
     
+    // MARK: - Public Methods
     func fetchPhotosNextPage() {
-        print("DEBUG 1: fetchPhotosNextPage вызван")
         assert(Thread.isMainThread)
         guard currentTask == nil else {
-            print("DEBUG 2: запрос уже идёт")
             return
         }
         
         let nextPage = (lastLoadedPage ?? 0) + 1
         
         guard let request = makePhotosRequest(page: nextPage) else {
-            print("DEBUG 3: makePhotosRequest вернул nil (скорее всего, нет токена)")
             return
         }
-        
-        print("DEBUG 4: отправляем запрос на \(request.url?.absoluteString ?? "")")
         
         let task = urlSession.objectTask(for: request) { [weak self] (result: Result<[PhotoResult], Error>) in
             guard let self = self else { return }
@@ -66,7 +66,6 @@ final class ImagesListService {
             
             switch result {
             case .success(let photoResults):
-                print("DEBUG 5: успешно получено фотографий — \(photoResults.count)")
                 let newPhotos = photoResults.map { result in
                     Photo(
                         id: result.id,
@@ -93,7 +92,7 @@ final class ImagesListService {
                 )
                 
             case .failure(let error):
-                print("DEBUG 6: ошибка загрузки — \(error.localizedDescription)")
+                print("[ImagesListService]: Error fetching photos - \(error.localizedDescription)")
             }
         }
         
@@ -106,14 +105,12 @@ final class ImagesListService {
         currentTask?.cancel()
         currentTask = nil
     }
-    // MARK: - Приватные методы
+    // MARK: - Private Methods
 
     private func makePhotosRequest(page: Int) -> URLRequest? {
         guard let token = OAuth2TokenStorage.shared.token else {
-            print("DEBUG: OAuth2TokenStorage.shared.token == NIL!")
             return nil
         }
-        print("DEBUG: Токен успешно прочитан из Keychain: \(token.prefix(6))...")
         
         var components = URLComponents()
         components.scheme = "https"
@@ -133,7 +130,7 @@ final class ImagesListService {
     }
 }
 
-// MARK: - Сетевой запрос для смены лайка
+// MARK: - Likes Network Requests
 extension ImagesListService {
     func changeLike(photoId: String, isLike: Bool, _ completion: @escaping (Result<Void, Error>) -> Void) {
         assert(Thread.isMainThread)
@@ -191,7 +188,8 @@ extension ImagesListService {
         return request
     }
 }
-// MARK: - Расширение для безопасной замены элемента по индексу
+
+// MARK: - Array Extension
 extension Array {
     func withReplaced(itemAt index: Int, newValue: Element) -> [Element] {
         var copy = self

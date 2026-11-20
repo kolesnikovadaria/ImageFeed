@@ -15,11 +15,7 @@ final class SingleImageViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        scrollView.delegate = self
-        scrollView.minimumZoomScale = 0.1
-        scrollView.maximumZoomScale = 1.25
-        scrollView.contentInsetAdjustmentBehavior = .never
-        
+        configureScrollView()
         loadImage()
     }
     
@@ -37,8 +33,15 @@ final class SingleImageViewController: UIViewController {
         )
         present(share, animated: true, completion: nil)
     }
+    // MARK: - Setup UI
+    private func configureScrollView() {
+        scrollView.delegate = self
+        scrollView.minimumZoomScale = 0.1
+        scrollView.maximumZoomScale = 1.25
+        scrollView.contentInsetAdjustmentBehavior = .never
+    }
     
-    // MARK: - Private Methods
+    // MARK: - Network Logic
     private func loadImage() {
         guard let fullImageURL else { return }
         
@@ -59,6 +62,7 @@ final class SingleImageViewController: UIViewController {
             }
         }
     }
+    // MARK: - Alerts
     
     private func showError() {
         let alert = UIAlertController(
@@ -72,7 +76,8 @@ final class SingleImageViewController: UIViewController {
         })
         present(alert, animated: true)
     }
-        
+    // MARK: - Image Layout & Scaling
+    
     private func rescaleAndCenterImageInScrollView(image: UIImage) {
         let minZoomScale = scrollView.minimumZoomScale
         let maxZoomScale = scrollView.maximumZoomScale
@@ -88,7 +93,6 @@ final class SingleImageViewController: UIViewController {
         
         scrollView.setZoomScale(scale, animated: false)
         
-        // Вычисляем отступы для центрирования
         let scaledWidth = imageSize.width * scale
         let scaledHeight = imageSize.height * scale
         

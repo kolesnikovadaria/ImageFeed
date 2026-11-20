@@ -4,10 +4,14 @@ import UIKit
 import Kingfisher
 
 final class ProfileLogoutService {
+    
+    // MARK: - Static Properties
     static let shared = ProfileLogoutService()
     
+    // MARK: - Initializers
     private init() {}
     
+    // MARK: - Public Methods
     func logout() {
         cleanToken()
         cleanCookies()
@@ -15,6 +19,7 @@ final class ProfileLogoutService {
         switchToSplashViewController()
     }
     
+    // MARK: - Private Methods
     private func cleanToken() {
         OAuth2TokenStorage.shared.token = nil
     }
