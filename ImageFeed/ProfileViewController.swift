@@ -137,8 +137,24 @@ final class ProfileViewController: UIViewController {
     
     // MARK: - Actions
     @objc private func didTapLogoutButton() {
-        // Логика выхода из аккаунта (будет дописана в следующих уроках)
-    }
+        let alert = UIAlertController(
+                   title: "Пока, пока!",
+                   message: "Уверены, что хотите выйти?",
+                   preferredStyle: .alert
+               )
+               
+               let yesAction = UIAlertAction(title: "Да", style: .default) { _ in
+                   ProfileLogoutService.shared.logout()
+               }
+               
+               let noAction = UIAlertAction(title: "Нет", style: .cancel)
+               
+               alert.addAction(yesAction)
+               alert.addAction(noAction)
+               
+               present(alert, animated: true)
+           }
+    
     // MARK: - Setup UI
     private func setupConstraints() {
         
